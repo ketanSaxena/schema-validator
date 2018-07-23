@@ -13,7 +13,7 @@ const validateSchema =  (targetObject, options) => {
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
     const content = targetObject || utils.loadContent(options.filePath)
-    _printErrors(schema.validate(content))
+    return _printErrors(schema.validate(content))
   } catch (error) {
     logger.error(error)
   }
@@ -26,6 +26,7 @@ const _printErrors = errors => {
   } else {
     logger.success('Schema Validated Successfully')
   }
+  return errors
 }
 
 module.exports = validateSchema

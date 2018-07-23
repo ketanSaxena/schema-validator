@@ -56,7 +56,7 @@ const requiredSchema = {
   },
   age: { type : Number }
 }
-validateSchema(person, { schema: requiredSchema })
+schemaErrors = validateSchema(person, { schema: requiredSchema })
 ```
 Schema validator validates the target file against the passed schema and
 lists down the mismatches in the structure:
@@ -64,6 +64,10 @@ ________
 ![schema-validator-listing-errors](https://image.ibb.co/caSGtd/schema_validator.png)
 ________
 
+It returns an array of errors showing the mismatches:
+```javascript
+[{path: 'person.id', message: 'person.id must be a String'}]
+```
 
 ## Schema properties
 - `type`: field that can be `boolean | string | number` to define type of value of that property
