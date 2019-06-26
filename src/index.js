@@ -2,6 +2,13 @@ const { logger, schemaBuilder, utils } = require('../lib')
 const fs = require('fs')
 const Schema = require('validate')
 
+const logLevels = {
+  none: 0,
+  error: 1,
+  warn: 2,
+  verbose: 3
+}
+
 const validateSchema =  (targetObject, options = {}) => {
   if(!targetObject)
     return logger.error('Missing argument: either targetObject or filePath is required')
@@ -9,7 +16,9 @@ const validateSchema =  (targetObject, options = {}) => {
   if(isPath ? !fs.existsSync(targetObject) : typeof targetObject !== 'object')
     return logger.error('Target must be either be an object or a valid filepath')
 
-  logger.info(`Validating schema for: ${targetObject}`)
+  if(logLevels[options.logLevel] > 2) {
+    logger.info(`Validating schema for: ${JSON.stringify(targetObject)}`)
+  }
   try {
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
@@ -17,7 +26,7 @@ const validateSchema =  (targetObject, options = {}) => {
     const clone = JSON.parse(JSON.stringify(content))
     const misMatches = new Schema(schema).validate(content)
     const extraFiels = validateExtraFields(clone, schema)
-    return printErrors(misMatches, extraFiels)
+    return printErrors(misMatches, extraFiels, logLevels[options.logLevel])
   } catch (error) {
     logger.error(error)
   }
@@ -50,13 +59,19 @@ const validateExtraFields = (targetObj, schemaObj) => {
   return extras;
 }
 
-const printErrors = (errors, warnings) => {
+const printErrors = (errors, warnings, logLevel = 3) => {
   if(errors.length || warnings.length) {
-    logger.error('====== Schema Validation Error ======')
-    logger.error(`${errors.length} mismatches and ${warnings.length} warnings found.`)
-    errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
-    warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
-  } else {
+    if(logLevel > 2) {
+      logger.error('====== Schema Validation Error ======')
+      logger.error(`${errors.length} mismatches and ${warnings.length} warnings found.`)
+    }
+    if(logLevel) {
+      errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
+    }
+    if(logLevel > 1) {
+      warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
+    }
+  } else if(logLevel > 2) {
     logger.success('Schema Validated Successfully')
   }
   return errors.concat(warnings)
