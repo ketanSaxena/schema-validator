@@ -7,6 +7,7 @@ Table of Contents
 
   * [Description](#description)
   * [Usage](#usage)
+  * [Options](#options)
   * [Schema properties](#schema-properties)
   * [Schema File Examples](#schema-file-examples)
     * [YAML Schema](#yaml-schema)
@@ -68,6 +69,20 @@ It returns an array of errors showing the mismatches:
 ```javascript
 [{path: 'person.id', message: 'person.id must be a String'}]
 ```
+
+## Options
+
+`options` parameter passed as the second argument in the validate schema method.
+
+```javascript
+validateSchema(targetObject, options);
+```
+
+It has following configurable options available:
+
+- **`schema`**: javascript object having the schema structure (eg: `{name: { type: String, required: true }`)
+- **`schemaPath`**: path to the json/yaml file having the schema
+- **`logLevel`**: specify the level of logging while validating schem. Possible values `['none', 'error', 'warn', 'verbose']` . By default the logLevel is set to *error*
 
 ## Schema properties
 - `type`: field that can be `boolean | string | number` to define type of value of that property
