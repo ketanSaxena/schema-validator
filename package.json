@@ -10,6 +10,10 @@
     "validate": "node index.js validate /filePath",
     "help": "node index.js help"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ketanTechracers/schema-validator"
+  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.2.1",
