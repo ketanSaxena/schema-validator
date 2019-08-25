@@ -1,0 +1,13 @@
+{
+  "person": {
+    "names": {
+      "first_name": { "type": "string" },
+      "last_name": { "type": "string" }
+    },
+    "id": { "type": "string" },
+    "nons": { "type": "string", "required": true },
+    "height": { "type": "number" },
+    "hobbies": [{"type": "string"}],
+    "attributes": [{ "foo": { "type": "string" } }]
+  }
+}

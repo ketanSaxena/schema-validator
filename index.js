@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 
-const yaml = require('js-yaml')
-const fs = require('fs')
 const program = require('commander')
 const pkg = require('./package.json')
-const logger = require('./lib/logger')
+const { logger, buildSchema, utils } = require('./lib')
 const help = require('./help')
 
 const validateSchema = (filePath, options) => {
@@ -13,19 +11,14 @@ const validateSchema = (filePath, options) => {
     return logger.error('Missing argument -f for filePath in validate command')
   logger.info(`Validating schema for file: ${options.filePath}`)
   try {
-    let schemaPath = options.schema || './schema.js'
+    let schemaPath = options.schema || `${__dirname}/examples/schema.json`
     logger.info(`Validating against schema at: ${schemaPath}`)
-    const schema = require(options.schema || './schema')
-    const content = _getContent(options)
+    const schema = buildSchema(schemaPath)
+    const content = utils.loadContent(options.filePath)
     _printErrors(schema.validate(content))
   } catch (error) {
     logger.error(error)
   }
-}
-
-const _getContent = options => {
-  let content = fs.readFileSync(options.filePath, 'utf8');
-  return options.json ? JSON.parse(content) : yaml.safeLoad(content)
 }
 
 const _printErrors = errors => {
@@ -42,7 +35,8 @@ program
   .command('validate')
   .option('-f, --filePath <filePath>', 'path to the target file for validating')
   .option('-j, --json','passed if target file is in JSON format')
-  .option('-s, --schema [schemaPath]','path to an external schema.js file')
+  .option('-s, --schema [schemaPath]','path to an external schema file')
+  .option('-sj, --schemaJson [schemaPath]','passed if schema file is in JSON format')
   .action(validateSchema);
 
 program.parse(process.argv);
