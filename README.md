@@ -1,5 +1,20 @@
-# yaml-schema-validator
+YAML/JSON Schema Validator
+==========================
 Schema validation utility for YAML/JSON files against a pre defined schema
+
+Table of Contents
+====================
+
+  * [Description](#description)
+  * [Usage](#usage)
+  * [Schema properties](#schema-properties)
+  * [Schema File Examples](#schema-file-examples)
+    * [YAML Schema](#yaml-schema)
+    * [JSON Schema](#json-schema)
+  * [Command Line Interface](#command-line-interface)
+    * [Command Usage](#command-usage)
+    * [Command Options](#command-options)
+    * [Command Alias](#command-alias)
 
 ## Description:
 
@@ -8,35 +23,41 @@ a yaml/json file against a predefined schema. The schema is expected
 to be a JSON or YAML file with a structure that defines type of each property.
 The object properties can be nested to as many levels as you like.
 
-
 ## Usage
 
-- run command `npm run validate -f <path-to-dummy.yml>` to validate the structure of your file
-- run command `npm run validate -f <path-to-dummy.yml> -s <path-to-schema.yml>` to validate the structure of your file against a specific schema file
-- run command `npm run help` to get information about it's usage
+It's method `validateSchema` can be imported and used as below:
 
-## Options
+```javascript
 
-- `-f, --filePath` <filePath> : **[Required param]** path to the target file for validating
-- `-s, --schema [schemaPath]` : path to an external schema file. If not passed the schema is fetched from _/examples/schema.json_ which is the defeault schema location.
+const validateSchema = require('yaml-schema-validator')
 
-For a file `dummy.yml` having following content:
+// validate a json OR yml file
+validateSchema('path/to/target-file.yml', {
+  schemaPath: '/path/to/required/schema.yml' // can also be schema.json
+})
 ```
-person:
-  names:
-    first_name: John
-    last_name: Lemon
-  id: 3456
-  height: 176
-  hobbies:
-    - reading
-    - coding
-  attributes:
-    - foo: bar
+The method automatically detects if file format is JSON or YAML and process it accordingly.  
+
+
+Similarly, method can also be used to validate plain JS objects:
+
+```javascript
+// validate an object
+let person = { name: { first: 'Tom', last: 'Xoman' }, age: 45 }
+vaidateSchema(person, {
+  schemaPath: '/path/to/schema.yml' // can also be schema.json
+})
+
+// validate against a JS schema object
+const requiredSchema = {
+  name: {
+    first: { type: String, required: true },
+    last: { type: String, required: true }
+  },
+  age: { type : Number }
+}
+validateSchema(person, { schema: requiredSchema })
 ```
-
-You can run `npm run validate -- -f dummy.yml` command:
-
 Schema validator validates the target file against the passed schema and
 lists down the mismatches in the structure:
 ________
@@ -52,16 +73,12 @@ ________
 ## Schema File Examples
 
 ### YAML Schema
-```
+```yml
 ---
 person:
-  names:
+  name:
     first_name:
       type: string
-    last_name:
-      type: string
-  id:
-    type: string
   age:
     type: number
     required: true
@@ -69,13 +86,10 @@ person:
     type: boolean
   hobbies:
   - type: string
-  attributes:
-  - foo:
-      type: string
 ```
 
 ### JSON Schema
-```
+```json
 {
   "person": {
     "names": {
@@ -90,3 +104,30 @@ person:
   }
 }
 ```
+
+## Command Line Interface
+----------------
+
+This package also can be used as a command line utility.
+
+### Command Usage
+- Basic syntax: `yaml-schema-validator [command] [options]`
+- In root folder of your project, use command: 
+`yaml-schema-validator validate -f path/to/dummy.yml -s path/to/schema.yml`
+- for help about the options use command:
+`yaml-schema-validator help`
+
+### Command Options
+
+- `-f, --filePath` <filePath> : **[Required param]** path to the target file for validating
+- `-s, --schema [schemaPath]` : path to an external schema file. If not passed the schema is fetched from _/examples/schema.json_ which is the defeault schema location.
+- `-t, --target [targetObj]`  : stringified JSON object whose structure is to be verified
+
+### Command Alias
+- You can also make alias for the command in your `package.json`. Just add the script key:
+```
+"scripts": {
+  "schema": "yaml-schema-validator"
+},
+```
+and then try `schema validate -f path/to/dummy.yml -s path/to/schema.yml`

@@ -1,5 +1,7 @@
-const logger = require('./lib/logger')
-const pkg = require('./package.json')
+#!/usr/bin/env node
+
+const logger = require('../lib/logger')
+const pkg = require('../package.json')
 
 const help = () => {
   logger.blueBold(`Validate schema utility [version: ${pkg.version}]`)
@@ -17,7 +19,6 @@ const help = () => {
   Options:
     -f, --filePath <filePath> : path to the target file for validating
     -s, --schema [schemaPath] : path to an external schema file in yml/json format
+    -t, --target [targetObj]  : stringified JSON object whose structure is to be verified
   `)
 }
-
-module.exports = help
