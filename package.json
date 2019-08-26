@@ -36,6 +36,6 @@
     "schema"
   ],
   "bin": {
-    "validate": "bin/validate"
+    "schema": "./index.js"
   }
 }

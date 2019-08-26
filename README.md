@@ -115,11 +115,11 @@ person:
 This package also can be used as a command line utility.
 
 ### Command Usage
-- Basic syntax: `yaml-schema-validator [command] [options]`
+- Basic syntax: `schema [command] [options]`
 - In root folder of your project, use command: 
-`yaml-schema-validator validate -f path/to/dummy.yml -s path/to/schema.yml`
+`schema validate -f path/to/dummy.yml -s path/to/schema.yml`
 - for help about the options use command:
-`yaml-schema-validator help`
+`schema validate -h`
 
 ### Command Options
 
