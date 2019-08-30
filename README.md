@@ -131,7 +131,7 @@ This package also can be used as a command line utility.
 - You can also make alias for the command in your `package.json`. Just add the script key:
 ```
 "scripts": {
-  "schema": "yaml-schema-validator"
+  "sc": "schema"
 },
 ```
-and then try `schema validate -f path/to/dummy.yml -s path/to/schema.yml`
+and then try `sc validate -f path/to/dummy.yml -s path/to/schema.yml`
