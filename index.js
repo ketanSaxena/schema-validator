@@ -12,7 +12,7 @@ program
   .option('-j, --json','passed if target file is in JSON format')
   .option('-s, --schema [schemaPath]','path to an external schema file')
   .action((options) => {
-    const targetObj = options.targetObj && JSON.parse(options.targetObj)
+    const targetObj = options.targetObj ? JSON.parse(options.targetObj) : options.filePath
     validateSchema(targetObj, options)
   });
 
