@@ -1,5 +1,6 @@
 const { logger, schemaBuilder, utils } = require('../lib')
 const fs = require('fs')
+const Schema = require('validate')
 
 const validateSchema =  (targetObject, options = {}) => {
   if(!targetObject)
@@ -13,20 +14,52 @@ const validateSchema =  (targetObject, options = {}) => {
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
     const content = isPath ? utils.loadContent(targetObject) : targetObject 
-    return printErrors(schema.validate(content))
+    const misMatches = new Schema(schema).validate(content)
+    const extraFiels = validateExtraFields(content, schema)
+    return printErrors(misMatches, extraFiels)
   } catch (error) {
     logger.error(error)
   }
 }
 
-const printErrors = errors => {
-  if(errors.length) {
-    logger.error(`====== Schema Validation Error ======\n\n${errors.length} mismatch found`)
+const validateExtraFields = (targetObj, schemaObj) => {
+  let extras = []
+
+  const leafNode = (obj) => {
+    return obj && ([String, Number, Boolean].includes(obj.type) || typeof obj.required === 'boolean')
+  }
+
+  const _parseTarget = (target, schema, parsedLevel = '') => {
+    if (typeof target !== 'object'){
+      return
+    }
+
+    for(let key in target) {
+      let schemaKey = target instanceof Array ? schema[0] : schema[key]
+      const nextLevel = parsedLevel ? `${parsedLevel}.${key}` : key
+      if(!schemaKey || typeof target[key] !== 'object' && !leafNode(schemaKey)) {
+        extras.push({ path: nextLevel, message: `${nextLevel} is not present in schema`})
+      } else {
+        _parseTarget(target[key], schemaKey, nextLevel)
+      }
+    }
+  }
+
+  _parseTarget(targetObj, schemaObj)
+  return extras;
+}
+
+const printErrors = (errors, warnings) => {
+  if(errors.length || warnings.length) {
+    logger.error(`====== Schema Validation Error ======
+    \n${errors.length + warnings.length} mismatch found`)
     errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
+    warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
   } else {
     logger.success('Schema Validated Successfully')
   }
-  return errors
+  return errors.concat(warnings)
 }
+
 
 module.exports = validateSchema
