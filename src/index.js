@@ -13,9 +13,10 @@ const validateSchema =  (targetObject, options = {}) => {
   try {
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
-    const content = isPath ? utils.loadContent(targetObject) : targetObject 
+    const content = isPath ? utils.loadContent(targetObject) : targetObject
+    const clone = JSON.parse(JSON.stringify(content))
     const misMatches = new Schema(schema).validate(content)
-    const extraFiels = validateExtraFields(content, schema)
+    const extraFiels = validateExtraFields(clone, schema)
     return printErrors(misMatches, extraFiels)
   } catch (error) {
     logger.error(error)
@@ -50,12 +51,21 @@ const validateExtraFields = (targetObj, schemaObj) => {
 }
 
 const printErrors = (errors, warnings) => {
-  if(errors.length || warnings.length) {
+  if(errors.length || warnings.length){
+  if(errors.length && warnings.length){
     logger.error(`====== Schema Validation Error ======
-    \n${errors.length + warnings.length} mismatch found`)
+    \n${errors.length} mismatch and ${warnings.length} warning found.`)
+    }
+  else if(warnings.length){
+    logger.error(`\n${warnings.length} warning found`)
+    }
+  else if(errors.length){
+      logger.error(`\n${errors.length} warning found`)
+     }
     errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
     warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
-  } else {
+  } 
+ else {
     logger.success('Schema Validated Successfully')
   }
   return errors.concat(warnings)
