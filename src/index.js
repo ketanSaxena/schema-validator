@@ -51,21 +51,12 @@ const validateExtraFields = (targetObj, schemaObj) => {
 }
 
 const printErrors = (errors, warnings) => {
-  if(errors.length || warnings.length){
-  if(errors.length && warnings.length){
-    logger.error(`====== Schema Validation Error ======
-    \n${errors.length} mismatch and ${warnings.length} warning found.`)
-    }
-  else if(warnings.length){
-    logger.error(`\n${warnings.length} warning found`)
-    }
-  else if(errors.length){
-      logger.error(`\n${errors.length} warning found`)
-     }
+  if(errors.length || warnings.length) {
+    logger.error('====== Schema Validation Error ======')
+    logger.error(`${errors.length} mismatches and ${warnings.length} warnings found.`)
     errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
     warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
-  } 
- else {
+  } else {
     logger.success('Schema Validated Successfully')
   }
   return errors.concat(warnings)
