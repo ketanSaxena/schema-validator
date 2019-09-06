@@ -70,6 +70,32 @@ It returns an array of errors showing the mismatches:
 [{path: 'person.id', message: 'person.id must be a String'}]
 ```
 
+### Custom validators
+Custom validators can be defined by passing an object with named validators to .use:
+
+```javascript
+// custom validation function checking value for a regex
+const checkHexColor = val => {
+  return /^#[0-9a-fA-F]$/.test(val)
+}
+
+const car = new Schema({
+  color: {
+    type: String,
+    use: { checkHexColor }
+  }
+})
+```
+
+### Custom error messages
+Define a custom error message for the validator:
+
+```javascript
+car.message({
+  checkHexColor: path => `${path} must be a valid hex color.`
+})
+```
+
 ## Options
 
 `options` parameter passed as the second argument in the validate schema method.
@@ -88,6 +114,8 @@ It has following configurable options available:
 - `type`: field that can be `boolean | string | number` to define type of value of that property
 - `required`: field can be set to true if the property is required in target file
 - `length` : feild can be used for string values to check minimum and max length of string. example `length: { min: 3, max: 32 }`
+- `use` : an object of custom validation methods to be checked for a particular field.
+Each function in use object should take `value` param as input and return a boolean.
 
 ## Schema File Examples
 
