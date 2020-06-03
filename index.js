@@ -9,6 +9,7 @@ program
   .command('validate')
   .option('-f, --filePath <filePath>', 'path to the target file for validating')
   .option('-t, --target [targetObj]', 'stringified JSON object whose structure is to be verified')
+  .option('-o, --schema-obj [schemaObj]', 'stringified JSON second object to directly compare the structure')
   .option('-j, --json','passed if target file is in JSON format')
   .option('-s, --schema [schemaPath]','path to an external schema file')
   .action((options) => {

@@ -20,6 +20,9 @@ const validateSchema =  (targetObject, options = {}) => {
     logger.info(`Validating schema for: ${JSON.stringify(targetObject)}`)
   }
   try {
+    if(options.schemaObj) {
+      options.schema = _getSchemaFromObj(options.schemaObj)
+    }
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
     const content = isPath ? utils.loadContent(targetObject) : targetObject
@@ -57,6 +60,27 @@ const validateExtraFields = (targetObj, schemaObj) => {
 
   _parseTarget(targetObj, schemaObj)
   return extras;
+}
+
+
+const _getSchemaFromObj = (object) => {
+  let keyValues = {}
+  for(let key in object) {
+    if(typeof object[key] === 'object') {
+      if(Array.isArray(object[key])) {
+        let first = object[key][0]
+        keyValues[key] = [
+          typeof first === 'object' ? _getSchemaFromObj(first) : {type: typeof first}  
+        ]
+      } else {
+        keyValues[key] = _getSchemaFromObj(object[key])
+      }
+    } else {
+      keyValues[key] = { required: true, type: typeof object[key]}
+    }
+  }
+
+  return keyValues
 }
 
 module.exports = validateSchema
