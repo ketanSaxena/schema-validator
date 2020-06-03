@@ -59,6 +59,18 @@ const requiredSchema = {
 }
 schemaErrors = validateSchema(person, { schema: requiredSchema })
 ```
+
+### Compare two objects' schema
+
+If you don't have a schema object built, but you just want to compare if structure of two objects is same, then you can use `schemaObj` option to pass the expected object:
+```javascript
+let person = { name: { first: 'Tom', last: 'Xoman' }, age: 'something' }
+let idealPerson = { name: { first: 'Tom', last: 'Xoman' }, age: 45 }
+vaidateSchema(person, {    // compares the structure of person object against
+  schemaObj: idealPerson   // anotherPerson object.
+})
+```
+
 Schema validator validates the target file against the passed schema and
 lists down the mismatches in the structure:
 ________
@@ -108,6 +120,7 @@ It has following configurable options available:
 
 - **`schema`**: javascript object having the schema structure (eg: `{name: { type: String, required: true }`)
 - **`schemaPath`**: path to the json/yaml file having the schema
+- **`schemaObj`**: Used when you directly want to compare the target with a structure of another object. Pass the expected object in this option to verify the target object is having the similar structure
 - **`logLevel`**: specify the level of logging while validating schem. Possible values `['none', 'error', 'warn', 'verbose']` . By default the logLevel is set to *error*
 
 ## Schema properties
@@ -168,6 +181,7 @@ This package also can be used as a command line utility.
 
 - `-f, --filePath` <filePath> : **[Required param]** path to the target file for validating
 - `-s, --schema [schemaPath]` : path to an external schema file. If not passed the schema is fetched from _/examples/schema.json_ which is the defeault schema location.
+- `-o, --schema-obj [schemaObj]` : stringified JSON object whose structure you want the target object to be compared with.
 - `-t, --target [targetObj]`  : stringified JSON object whose structure is to be verified
 
 ### Command Alias

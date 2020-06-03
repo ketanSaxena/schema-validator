@@ -1,6 +1,6 @@
-const { logger, schemaBuilder, utils } = require('../lib')
 const fs = require('fs')
 const Schema = require('validate')
+const { logger, schemaBuilder, utils, printErrors } = require('../lib')
 
 const logLevels = {
   none: 0,
@@ -20,11 +20,14 @@ const validateSchema =  (targetObject, options = {}) => {
     logger.info(`Validating schema for: ${JSON.stringify(targetObject)}`)
   }
   try {
+    if(options.schemaObj) {
+      options.schema = _getSchemaFromObj(options.schemaObj)
+    }
     let inputSchema = options.schema || options.schemaPath || `${__dirname}/../examples/schema.json`
     const schema = schemaBuilder.getSchema(inputSchema)
     const content = isPath ? utils.loadContent(targetObject) : targetObject
     const clone = JSON.parse(JSON.stringify(content))
-    const misMatches = new Schema(schema).validate(content)
+    const misMatches = new Schema(schema).validate(content).map(err => ({path: err.path, message: err.message}))
     const extraFiels = validateExtraFields(clone, schema)
     return printErrors(misMatches, extraFiels, logLevels[options.logLevel])
   } catch (error) {
@@ -59,23 +62,25 @@ const validateExtraFields = (targetObj, schemaObj) => {
   return extras;
 }
 
-const printErrors = (errors, warnings, logLevel = 3) => {
-  if(errors.length || warnings.length) {
-    if(logLevel > 2) {
-      logger.error('====== Schema Validation Error ======')
-      logger.error(`${errors.length} mismatches and ${warnings.length} warnings found.`)
-    }
-    if(logLevel) {
-      errors.forEach((err, index) => logger.red(`${index + 1}. ${err.message}`))
-    }
-    if(logLevel > 1) {
-      warnings.forEach((warn, index) => logger.yellow(`${index + 1}. ${warn.message}`))
-    }
-  } else if(logLevel > 2) {
-    logger.success('Schema Validated Successfully')
-  }
-  return errors.concat(warnings)
-}
 
+const _getSchemaFromObj = (object) => {
+  let keyValues = {}
+  for(let key in object) {
+    if(typeof object[key] === 'object') {
+      if(Array.isArray(object[key])) {
+        let first = object[key][0]
+        keyValues[key] = [
+          typeof first === 'object' ? _getSchemaFromObj(first) : {type: typeof first}  
+        ]
+      } else {
+        keyValues[key] = _getSchemaFromObj(object[key])
+      }
+    } else {
+      keyValues[key] = { required: true, type: typeof object[key]}
+    }
+  }
+
+  return keyValues
+}
 
 module.exports = validateSchema
