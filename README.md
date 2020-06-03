@@ -2,6 +2,12 @@ YAML/JSON Schema Validator
 ==========================
 Schema validation utility for YAML/JSON files against a pre defined schema
 
+![LICENSE](https://img.shields.io/npm/l/schema-validator)
+![VERSION](https://img.shields.io/github/v/release/ketanTechracers/schema-validator)
+![DOWNLOADS](https://img.shields.io/npm/dm/yaml-schema-validator)
+![VULNERABILITY](https://img.shields.io/snyk/vulnerabilities/github/ketanTechracers/schema-validator)
+![ISSUES](https://img.shields.io/github/issues/ketanTechracers/schema-validator)
+
 Table of Contents
 ====================
 
