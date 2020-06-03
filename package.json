@@ -1,6 +1,6 @@
 {
   "name": "yaml-schema-validator",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Schema validator for yaml files",
   "author": "Ketan Saxena",
   "license": "MIT",
