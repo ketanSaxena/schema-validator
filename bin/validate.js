@@ -12,7 +12,10 @@ program
   .option('-s, --schema [schemaPath]','path to an external schema file')
   .action((options) => {
     const targetObj = options.targetObj ? JSON.parse(options.targetObj) : options.filePath
-    validateSchema(targetObj, options)
+    const errorsAndWarnings = validateSchema(targetObj, options)
+    if (errorsAndWarnings?.length > 0) {
+      process.exit(1)
+    }
   });
 
 program.parse(process.argv);
