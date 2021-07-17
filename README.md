@@ -189,6 +189,8 @@ This package also can be used as a command line utility.
 - `-s, --schema [schemaPath]` : path to an external schema file. If not passed the schema is fetched from _/examples/schema.json_ which is the defeault schema location.
 - `-o, --schema-obj [schemaObj]` : stringified JSON object whose structure you want the target object to be compared with.
 - `-t, --target [targetObj]`  : stringified JSON object whose structure is to be verified
+- `-j, --json`    : Passed if target file is in JSON format
+- `-e, --exit-on-err`  : Exit process with nonzero status on errors or warnings
 
 ### Command Alias
 - You can also make alias for the command in your `package.json`. Just add the script key:
