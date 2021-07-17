@@ -12,9 +12,13 @@ program
   .option('-o, --schema-obj [schemaObj]', 'stringified JSON second object to directly compare the structure')
   .option('-j, --json','passed if target file is in JSON format')
   .option('-s, --schema [schemaPath]','path to an external schema file')
+  .option('-e, --exit-on-err','Exit process with nonzero status on errors or warnings')
   .action((options) => {
     const targetObj = options.targetObj ? JSON.parse(options.targetObj) : options.filePath
-    validateSchema(targetObj, options)
+    const errorsAndWarnings = validateSchema(targetObj, options)
+    if (options.exitOnErr && errorsAndWarnings && errorsAndWarnings.length > 0) {
+      process.exit(1)
+    }
   });
 
 program.parse(process.argv);
