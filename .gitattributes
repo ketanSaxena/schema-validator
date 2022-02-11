@@ -1,0 +1,4 @@
+# Force line endings for index.js to unix-style.
+# Unlike npm, yarn does not convert line endings of bin-files.
+# This means that package releases from a windows machine will end up on unix file systems with crlf line endings, and will not be executable from a command-line.
+/index.js eol=lf
